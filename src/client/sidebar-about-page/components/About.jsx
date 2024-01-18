@@ -1,26 +1,28 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { Button, Container } from 'semantic-ui-react';
+import { PartControl } from './PartControl';
 
-const About = () => (
-  <div>
-    <p>
-      <b>☀️ React app inside a sidebar! ☀️</b>
-    </p>
-    <p>
-      This is a very simple page demonstrating how to build a React app inside a
-      sidebar.
-    </p>
-    <p>
-      Visit the Github repo for more information on how to use this project.
-    </p>
-    <p>- Elisha Nuchi</p>
-    <a
-      href="https://www.github.com/enuchi/React-Google-Apps-Script"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      React + Google Apps Script
-    </a>
-  </div>
-);
+// This is a wrapper for google.script.run that lets us use promises.
+import { serverFunctions } from '../../utils/serverFunctions';
+import { collection, getDocs } from 'firebase/firestore/lite';
+import { useAsyncEffect, useFirebase } from '../hooks';
+
+
+const About = () => {
+
+    const firebase = useFirebase()
+    const [user, setUser] = useState(firebase.user)
+
+    return (
+        <div style={{width:'300px', padding:'1em'}}>
+            {!user && <Button >Sign in</Button>}
+            {user && <>
+                signed in as {user.email} <Button>Sign out</Button>
+                <p></p>
+                <PartControl />
+            </>}
+        </div>
+    )
+};
 
 export default About;
