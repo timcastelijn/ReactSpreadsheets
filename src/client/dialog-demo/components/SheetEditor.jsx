@@ -6,6 +6,20 @@ import SheetButton from './SheetButton';
 // This is a wrapper for google.script.run that lets us use promises.
 import { serverFunctions } from '../../utils/serverFunctions';
 
+const firebaseConfig = {
+    apiKey: process.env.REACT_APP_API_KEY,
+    authDomain: process.env.REACT_APP_AUTH_DOMAIN,
+    databaseURL: process.env.REACT_APP_DATABASE_URL,
+    projectId: process.env.REACT_APP_PROJECT_ID,
+    storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+    messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
+};
+
+import { initializeApp } from 'firebase/app';
+import { getFirestore, collection, getDocs } from 'firebase/firestore/lite';
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+
+
 const SheetEditor = () => {
   const [names, setNames] = useState([]);
 
@@ -13,6 +27,50 @@ const SheetEditor = () => {
     // Call a server global function here and handle the response with .then() and .catch()
     serverFunctions.getSheetsData().then(setNames).catch(alert);
   }, []);
+
+  useEffect(()=>{
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const provider = new GoogleAuthProvider();
+    const auth = getAuth();
+    signInWithPopup(auth, provider)
+      .then(async (result) => {
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        const token = credential.accessToken;
+        // The signed-in user info.
+        const user = result.user;
+        // IdP data available using getAdditionalUserInfo(result)
+        // ...
+        console.log('user', user);
+
+        // Get a list of cities from your database
+        async function getUsers(db) {
+            const citiesCol = collection(db, 'users');
+            const citySnapshot = await getDocs(citiesCol);
+            const cityList = citySnapshot.docs.map(doc => doc.data());
+            return cityList;
+        }
+
+        const users = await getUsers(db)
+        
+        console.log('success', users)
+      }).catch((error) => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // The email of the user's account used.
+        const email = error.customData.email;
+        // The AuthCredential type that was used.
+        const credential = GoogleAuthProvider.credentialFromError(error);
+        // ...
+      });
+
+
+
+
+  },[])
 
   const deleteSheet = (sheetIndex) => {
     serverFunctions.deleteSheet(sheetIndex).then(setNames).catch(alert);
