@@ -5,6 +5,10 @@ import SheetButton from './SheetButton';
 
 // This is a wrapper for google.script.run that lets us use promises.
 import { serverFunctions } from '../../utils/serverFunctions';
+import { initializeApp } from 'firebase/app';
+import { getFirestore, collection, getDocs } from 'firebase/firestore/lite';
+import { getAuth, signInWithPopup, GoogleAuthProvider, setPersistence, browserSessionPersistence  } from "firebase/auth";
+
 
 const firebaseConfig = {
     apiKey: process.env.REACT_APP_API_KEY,
@@ -15,9 +19,7 @@ const firebaseConfig = {
     messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
 };
 
-import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, getDocs } from 'firebase/firestore/lite';
-import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+
 
 
 const SheetEditor = () => {
@@ -28,14 +30,16 @@ const SheetEditor = () => {
     serverFunctions.getSheetsData().then(setNames).catch(alert);
   }, []);
 
-  useEffect(()=>{
+  useEffect(async ()=>{
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    const provider = new GoogleAuthProvider();
     const auth = getAuth();
-    signInWithPopup(auth, provider)
-      .then(async (result) => {
+    await setPersistence(auth, browserSessionPersistence)
+
+    if(!auth.currentUser){
+        const provider = new GoogleAuthProvider();
+        const result = await signInWithPopup(auth, provider)
         // This gives you a Google Access Token. You can use it to access the Google API.
         const credential = GoogleAuthProvider.credentialFromResult(result);
         const token = credential.accessToken;
@@ -44,31 +48,20 @@ const SheetEditor = () => {
         // IdP data available using getAdditionalUserInfo(result)
         // ...
         console.log('user', user);
-
-        // Get a list of cities from your database
-        async function getUsers(db) {
-            const citiesCol = collection(db, 'users');
-            const citySnapshot = await getDocs(citiesCol);
-            const cityList = citySnapshot.docs.map(doc => doc.data());
-            return cityList;
-        }
-
-        const users = await getUsers(db)
-        
-        console.log('success', users)
-      }).catch((error) => {
-        // Handle Errors here.
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // The email of the user's account used.
-        const email = error.customData.email;
-        // The AuthCredential type that was used.
-        const credential = GoogleAuthProvider.credentialFromError(error);
-        // ...
-      });
+    }
 
 
+    // Get a list of cities from your database
+    async function getUsers(db) {
+        const citiesCol = collection(db, 'users');
+        const citySnapshot = await getDocs(citiesCol);
+        const cityList = citySnapshot.docs.map(doc => doc.data());
+        return cityList;
+    }
 
+    const users = await getUsers(db)
+    
+    console.log('success', users)
 
   },[])
 

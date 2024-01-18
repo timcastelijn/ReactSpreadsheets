@@ -4,6 +4,12 @@ import SheetEditor from './components/SheetEditor';
 
 import './styles.css';
 
+const App = ()=>(
+    <>
+        <SheetEditor/>
+    </>
+)
+
 const container = document.getElementById('index');
 const root = createRoot(container);
-root.render(<SheetEditor />);
+root.render(<App />);

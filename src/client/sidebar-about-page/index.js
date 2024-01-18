@@ -4,4 +4,11 @@ import About from './components/About';
 
 const container = document.getElementById('index');
 const root = createRoot(container);
-root.render(<About />);
+
+const App = ()=>(
+    <>
+        <About />
+    </>
+)
+
+root.render(<App />);
