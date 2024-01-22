@@ -9,7 +9,7 @@ import 'semantic-ui-css/semantic.min.css'
 import { FirebaseContext, useAsyncEffect } from './hooks';
 import { Firebase } from './components/Firebase';
 
-import About from './components/About';
+import Home from './pages/Home';
 
 const container = document.getElementById('index');
 const root = createRoot(container);
@@ -27,7 +27,7 @@ const App = ()=>{
 
 
     return <FirebaseContext.Provider value={firebase}>
-        {authState && <About />}
+        {authState && <Home />}
     </FirebaseContext.Provider>
 }
 
