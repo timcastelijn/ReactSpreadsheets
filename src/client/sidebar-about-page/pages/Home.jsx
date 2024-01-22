@@ -3,6 +3,7 @@ import React, {  useState } from 'react';
 
 // This is a wrapper for google.script.run that lets us use promises.
 import {  useFirebase } from '../hooks';
+import { Container } from 'semantic-ui-react';
 
 
 
@@ -14,9 +15,9 @@ const Home = () => {
     const [path, setPath] = useState();    
 
     return (
-        <>
+        <Container>
             home
-        </>
+        </Container>
     )
 };
 

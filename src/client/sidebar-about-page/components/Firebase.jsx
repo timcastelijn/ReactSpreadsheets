@@ -18,12 +18,11 @@ export class Firebase {
         const app = initializeApp(firebaseConfig);
         this.db = getFirestore(app);
 
-        const auth = getAuth();
-        this.user = auth.currentUser;
+        this.user = null;
 
     }
 
-    async doAuth() {
+    doAuth = async ()=> {
 
         console.log('do auth');
         const auth = getAuth();
@@ -49,7 +48,7 @@ export class Firebase {
         return this.user;
     }
 
-    async doSignOut() {
+    doSignOut = async() =>{
         console.log('doSignOut');
         const auth = getAuth();
 

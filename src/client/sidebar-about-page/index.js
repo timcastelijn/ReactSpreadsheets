@@ -14,6 +14,10 @@ import { App } from './components/App';
 const container = document.getElementById('index');
 const root = createRoot(container);
 
+if (module.hot) {
+    module.hot.accept();
+}
+
 root.render(
     <FirebaseContext.Provider value={new Firebase()}>
         <App />

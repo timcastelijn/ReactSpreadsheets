@@ -1,6 +1,6 @@
 export const onOpen = () => {
   const menu = SpreadsheetApp.getUi()
-    .createMenu('My Sample React Project') // edit me!
+    .createMenu('TNM Backoffice Tools') // edit me!
     .addItem('TNM Backoffice Tools', 'openAboutSidebar');
 
   menu.addToUi();

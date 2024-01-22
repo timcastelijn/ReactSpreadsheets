@@ -49,12 +49,23 @@ export const App = () => {
     },[])
 
 
+    async function doSignIn(){
+        const user = await firebase.doAuth()
+        setUser(user)
+    }
+
+    async function doSignOut(){
+        await firebase.doSignOut()
+        setUser()
+    }
+
+
     return (
         <div style={{width:'300px', padding:'1em'}}>
 
-            {!user && <Button >Sign in</Button>}
+            {!user && <Button onClick={doSignIn}>Sign in</Button>}
             {user && <>
-                {user.email} <Button>Sign out</Button>
+                {user.email} <Button onClick={doSignOut}>Sign out</Button>
                 <Navigation setPath={setPath} />
                 {!path && <Home />}
                 {path && <Route path={path} />}
