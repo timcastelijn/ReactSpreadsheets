@@ -4,7 +4,7 @@ import {
   openAboutSidebar,
 } from './ui';
 
-import { getSheetsData, addSheet, deleteSheet, setActiveSheet, setCurrentCellValues } from './sheets';
+import { getSheetsData, addSheet, deleteSheet, setActiveSheet, setCurrentCellValues, setCellValidationRange } from './sheets';
 
 // Public functions must be exported as named exports
 export {
@@ -16,4 +16,5 @@ export {
   deleteSheet,
   setActiveSheet,
   setCurrentCellValues,
+  setCellValidationRange,
 };

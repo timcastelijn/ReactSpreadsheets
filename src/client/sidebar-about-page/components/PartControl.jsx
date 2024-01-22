@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { collection, getDocs, doc, getDoc  } from 'firebase/firestore';
-import { Button, Dropdown } from "semantic-ui-react"
+import { collection, getDocs, doc, getDoc, where, query  } from 'firebase/firestore';
+import { Button, Dropdown, Loader } from "semantic-ui-react"
 
 import { useFirebase } from "../hooks";
-import SimpleTable from "../modules/SimpleTable";
 import { PartTypeSearch } from "../modules/DynamicSearch/PartTypeSearch";
 import { serverFunctions } from "../../utils/serverFunctions";
 
@@ -13,6 +12,7 @@ export const PartControl = ()=>{
 
     const [categoryTree, setCategoryTree] = useState();
     const [selected, setSelected] = useState();
+    const [loading, setLoading] = useState();
 
 
     // // Get category tree from database
@@ -34,19 +34,59 @@ export const PartControl = ()=>{
     //     getCategoryTree()
     // }, [])
 
-    function onChange(e, {value}){
-        console.log('selected', value.uuid);
-        setSelected(value)
+    async function onChange(e, {value}){
+        setLoading(true)
+        try {
+            
+            console.log('selected', value.uuid);
+            
+            setSelected(value)
+            
+            
+            const q = query(collection(firebase.db, 'articles'), where('ref_uuid', '==', value.uuid));
+            const snapshot = await getDocs(q);
+            const articles = []
+            if (snapshot.size > 0) {
+                snapshot.forEach(doc => {
+                    articles.push(doc.data())
+                })
+            }
         
-        serverFunctions.setCurrentCellValues([value.uuid, value.productName])
+            const priceEntries = []
+            for (const article of articles) {            
+                const q2= query(collection(firebase.db, 'price_entries'), where('article_id', '==', value.uuid));
+                const snapshot2 = await getDocs(q2);
+                if (snapshot2.size > 0) {
+                    snapshot2.forEach(doc => {
+                        const entry = doc.data()
+                        entry.article_entry = article
+                        priceEntries.push(entry)
+                    })
+                }
+            }
+            
+            console.log('priceEntries', priceEntries);
+            const sorted = priceEntries.sort((a,b)=>a.created_at < b.created_at? -1 :1)
+            const mostRecent = sorted[sorted.length-1]
+            
+            await serverFunctions.setCurrentCellValues([value.uuid, value.productName, mostRecent.nett_unit_price])
+            await serverFunctions.setCellValidationRange(2, sorted.map(p=>p.nett_unit_price))
+        
+        } catch (error) {
+            
+        } finally{
+            setLoading()
+        }
+        
     }
-
-
-
-
+    
+    
+    
+    
     return <>
         <p>type to find and insert part reference</p>
         <PartTypeSearch onChange={onChange}/>
+        {loading && <Loader active inline/>}
         {/* <Button onClick={insert}>Insert part</Button> */}
 
         {/* <SimpleTable>

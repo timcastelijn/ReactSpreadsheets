@@ -48,3 +48,14 @@ export const setCurrentCellValues = (value) => {
         const cell = SpreadsheetApp.getActiveSheet().getCurrentCell().setValue(value);
     }
 }
+
+export const setCellValidationRange = (offset, list) =>{
+    const sheet = SpreadsheetApp.getActiveSheet()
+    const cell = sheet.getActiveCell();
+    const row = cell.getRow();
+    const column = cell.getColumn();
+
+    const range = sheet.getRange(row, column + offset);
+    range.setDataValidation( SpreadsheetApp.newDataValidation().requireValueInList(list).build())
+    return true
+}
