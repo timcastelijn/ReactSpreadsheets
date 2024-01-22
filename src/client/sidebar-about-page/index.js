@@ -9,26 +9,13 @@ import 'semantic-ui-css/semantic.min.css'
 import { FirebaseContext, useAsyncEffect } from './hooks';
 import { Firebase } from './components/Firebase';
 
-import Home from './pages/Home';
+import { App } from './components/App';
 
 const container = document.getElementById('index');
 const root = createRoot(container);
 
-
-const App = ()=>{
-
-    const firebase = new Firebase();
-    const [authState, setAuthstate] = useState();
-
-    useAsyncEffect(async()=>{
-        const user = await firebase.doAuth()
-        setAuthstate(user)
-    },[])
-
-
-    return <FirebaseContext.Provider value={firebase}>
-        {authState && <Home />}
+root.render(
+    <FirebaseContext.Provider value={new Firebase()}>
+        <App />
     </FirebaseContext.Provider>
-}
-
-root.render(<App/>);
+);

@@ -1,5 +1,7 @@
 import SimpleTable from './SimpleTable'
+import { LinkItem } from './LinkItem'
 
 export { 
-    SimpleTable 
+    SimpleTable,
+    LinkItem,
 }

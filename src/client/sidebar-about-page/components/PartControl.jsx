@@ -14,33 +14,25 @@ export const PartControl = ()=>{
     const [categoryTree, setCategoryTree] = useState();
     const [selected, setSelected] = useState();
 
-    // Get a list of cities from your database
-    async function getUsers() {
-        const citiesCol = collection(firebase.db, 'users');
-        const citySnapshot = await getDocs(citiesCol);
-        const cityList = citySnapshot.docs.map(doc => doc.data());
-        console.log('users', cityList)
-        return cityList;
-    }
 
-    // Get category tree from database
-    async function getCategoryTree() {
-        const docRef = doc(firebase.db, "application_metadata", "part_type_metadata");
-        const docSnap = await getDoc(docRef);
+    // // Get category tree from database
+    // async function getCategoryTree() {
+    //     const docRef = doc(firebase.db, "application_metadata", "part_type_metadata");
+    //     const docSnap = await getDoc(docRef);
 
-        if (docSnap.exists()) {
-            const data = docSnap.data()
-            console.log("Document data:", data);
-            setCategoryTree(data.category_tree)
-        } else {
-            // docSnap.data() will be undefined in this case
-            console.log("No such document!");
-        }
-    }
+    //     if (docSnap.exists()) {
+    //         const data = docSnap.data()
+    //         console.log("Document data:", data);
+    //         setCategoryTree(data.category_tree)
+    //     } else {
+    //         // docSnap.data() will be undefined in this case
+    //         console.log("No such document!");
+    //     }
+    // }
 
-    useEffect(()=>{
-        getCategoryTree()
-    }, [])
+    // useEffect(()=>{
+    //     getCategoryTree()
+    // }, [])
 
     function onChange(e, {value}){
         console.log('selected', value.uuid);
@@ -53,6 +45,7 @@ export const PartControl = ()=>{
 
 
     return <>
+        <p>type to find and insert part reference</p>
         <PartTypeSearch onChange={onChange}/>
         {/* <Button onClick={insert}>Insert part</Button> */}
 
